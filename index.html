@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+  <link rel='stylesheet' type='text/css' href='css/style.css'>
+  <!-- Latest compiled and minified CSS -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap-modal.min.js"></script>
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 visit">
+      Visitors
+    </div>
+    <div class="col-md-8">
+      <div id='messagesDiv' class="messages"></div>
+      <!--<input type='text' id='nameInput' placeholder='Name'>-->
+      <input type='text' id='messageInput' class="inputBox" placeholder='Message'>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <div class="modal fade" id="auth-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        </div>
+        <div class="modal-body text-center">
+          <p>
+            <a id="twitter-signin" href="javascript:login('twitter');">
+              <img id="twitter-signin-btn" src="assets/img/twitterButton.png">
+            </a>
+            <a id="facebook-signin" href="javascript:login('facebook');">
+              <img id="facebook-signin-btn" src="assets/img/twitterButton.png">
+            </a>
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--<div class="header-content">-->
+  <!--<div class="container text-center">-->
+    <!--<div id="auth-modal" class="modal hide fade" tabindex="-1" role="dialog">-->
+      <!--<div class="modal-header">-->
+        <!--<button type="button" class="close" data-dismiss="modal">×</button>-->
+        <!--<h4 id="myModalLabel">Authenticate to continue</h4>-->
+      <!--</div>-->
+      <!--<div class="modal-body text-center">-->
+        <!--<p>-->
+          <!--<a id="twitter-signin" href="javascript:login('twitter');">-->
+            <!--<img id="twitter-signin-btn" src="assets/img/twitterButton.png">-->
+          <!--</a>-->
+          <!--<a id="facebook-signin" href="javascript:login('facebook');">-->
+            <!--<img id="facebook-signin-btn" src="assets/img/twitterButton.png">-->
+          <!--</a>-->
+        <!--</p>-->
+      <!--</div>-->
+      <!--<div class="modal-footer">-->
+        <!--<button class="btn" data-dismiss="modal">Cancel</button>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
+
+<script type="text/javascript">
+  var myDataRef = new Firebase('https://uit-chat.firebaseio.com/');
+  var name = "";
+  var authModal = $('#auth-modal').modal( {show : false} );
+//  var chat =
+
+//  name = prompt.$('#auth-modal');
+
+//  myDataRef.onAuth(function(authData) {
+//    var userId = authData.uid,
+//      username = authData[authData.provider].displayName;
+//
+//    name = userId + username;
+//
+//  });
+
+
+  $('#messageInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+      if(!name){
+        authModal.modal('show');
+        return false;
+      }else{
+        console.log(name);
+      }
+//      var name = $('#nameInput').val();
+      var text = $('#messageInput').val();
+      myDataRef.push({name: name, text: text});
+      $('#messageInput').val('');
+    }
+  });
+  myDataRef.on('child_added', function(snapshot) {
+    var message = snapshot.val();
+    displayChatMessage(message.name, message.text);
+  });
+
+
+  function displayChatMessage(name, text) {
+    $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+    $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+  };
+</script>
+</body>
+</html>
