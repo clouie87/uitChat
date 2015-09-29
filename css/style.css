@@ -1,6 +1,8 @@
 body{
-  margin:40px;
+  margin:20px;
 }
+
+
 .visit{
   background-color: mediumslateblue;
   height: 435px;
@@ -19,21 +21,28 @@ body{
 .modal {
   position: relative !important;
   margin-left: 30% !important;
-  right-padding: 200px;
+  right-padding: 100px;
   margin-top: -400px !important;
   background-color: transparent !important;
   width: 50% !important;
 }
+.label{
+  margin-left: -10%;
+
+  /*border-radius: 2px;*/
+}
 .btn-circle {
-  width: 30px !important;
-  height: 30px !important;
+  outline: 1px;
+  outline-offset: 0;
+  border: 1px solid lightgrey;
+  width: 20px !important;
+  height: 20px !important;
   text-align: center !important;
-  padding: 6px 6px;
+  padding: 0;
   background-color: transparent;
-  margin-left: 5% !important;
-  font-size: 12px;
-  line-height: 1.428571429;
-  border-radius: 15px;
+  /*margin-left: 3% !important;*/
+  font-size: 9px;
+  border-radius: 50%;
 }
 
 .row{

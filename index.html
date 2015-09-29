@@ -17,26 +17,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+
+
 <div class="container">
+
   <div class="row">
-    <div class="col-md-3 visit">
+
+    <!--LEFT SIDE-->
+    <div class="col-md-2 visit">
       <div class="row">
-        <div class="col-md-4">Channels</div>
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-          <button type="button" class="btn-circle">
+        <div class="col-md-8">Channels</div>
+        <div class="col-md-2">
+          <button type="button" id="addChannel" class="btn-circle btn-flat" >
             <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
           </button>
         </div>
       </div>
       <div id="channelsDiv" class="channels"></div>
-
     </div>
-    <div class="col-md-8">
+
+
+    <!--MESSAGE BOX-->
+    <div class="col-md-10">
       <div id='messagesDiv' class="messages"></div>
       <!--<input type='text' id='nameInput' placeholder='Name'>-->
       <input type='text' id='messageInput' class="inputBox" placeholder='Message'>
     </div>
+
   </div>
 </div>
 
@@ -78,20 +85,64 @@
         </p>
       </div>
 
-      <!--<div class="modal-footer">-->
-        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>-->
-      <!--</div>-->
+
+
     </div>
   </div>
 </div>
 
+<div class="modal fade" id="channel-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title text-center" id="myModalLabel">Create A New Channel</h4>
+      </div>
+      <div class="modal-body text-center">
+
+        <form class="form-horizontal">
+
+          <div class="form-group">
+            <label for="channelName" class="col-sm-2 control-label">Channel Name:</label>
+            <div class="col-sm-8">
+              <textarea type="button" class="form-control" id="channelName" rows="3" placeholder="What do you want to name your Channel?"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="channelPurpose" class="col-sm-2 control-label">Purpose:</label>
+            <div class="col-sm-8">
+              <textarea type="button" class="form-control" id="channelPurpose" rows="3" placeholder="What is the purpose of this channel?"></textarea>
+            </div>
+          </div>
+
+          <div type="hidden" id="channelCreator" val=authData.name></div>
+
+          <button type="button" id="cancel" data-dismiss="modal" class="btn btn-default">Cancel</button>
+          <button type="button" id="createChannel" class="btn btn-success">Create Channel</button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
 <script type="text/javascript">
+
+//  Declare Variables
   var myDataRef = new Firebase('https://uit-chat.firebaseio.com/');
   var name = "";
-//  var userId= "";
   var authModal = $('#auth-modal').modal( {show : false} );
+  var channelModal = $('#channel-modal').modal( {show :false} );
 
-
+//  Auth Stuff
   myDataRef.onAuth(function(authData) {
     if(authData) {
       console.log(authData);
@@ -99,23 +150,6 @@
         username = authData[authData.provider].displayName;
       name = username;
       myDataRef.child('user').child(userId).push({id: userId, name: name});
-    }
-  });
-
-
-
-  $('#messageInput').keypress(function (e) {
-    if (e.keyCode == 13) {
-      if(!name){
-        authModal.modal('show');
-        return false;
-      }else{
-        console.log(name);
-      }
-//      var name = $('#nameInput').val();
-      var text = $('#messageInput').val();
-      myDataRef.child('messages').push({name: name, text: text});
-      $('#messageInput').val('');
     }
   });
 
@@ -130,11 +164,49 @@
     });
   }
 
-  function logout(){
-    myDataRef.unauth();
-    console.log("we are logging out");
-    location.reload();
-  }
+//Left Side Functions
+  $('#addChannel').click(function(){
+    console.log('the button was pressed');
+    channelModal.modal('show');
+  });
+
+  $('#createChannel').click(function(data){
+    console.log('the create channel button');
+    if(!name){
+      console.log('there is no name');
+    }else{
+      console.log('the name is, ', name);
+      var time = data.timeStamp;
+      console.log('the time is', time);
+
+      channelModal.modal('hide');
+      var channelName = $('#channelName').val();
+      var channelPurpose = $('#channelPurpose').val();
+
+      myDataRef.child('channels').child(channelName).push( {channelName: channelName, creator: name, channelPurpose: channelPurpose} );
+      console.log(channelName);
+    }
+
+  });
+
+//  when the enter key is pressed then: check to see if we have authenticated the user
+//  if not get them to auth, if so let them type a message
+  $('#messageInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+//      if there is no name then show a popup asking them to auth
+      if(!name){
+        authModal.modal('show');
+        return false;
+      }else{
+        console.log(name);
+      }
+
+      var text = $('#messageInput').val();
+      myDataRef.child('messages').push({name: name, text: text});
+      $('#messageInput').val('');
+    }
+  });
+
 
   myDataRef.child('messages').on('child_added', function(snapshot) {
     var message = snapshot.val();
@@ -146,6 +218,13 @@
     $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
     $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
   };
+
+  function logout(){
+    myDataRef.unauth();
+    console.log("we are logging out");
+    location.reload();
+  }
+
 </script>
 </body>
 </html>
