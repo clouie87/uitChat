@@ -1,6 +1,10 @@
+body{
+  margin:40px;
+}
 .visit{
   background-color: mediumslateblue;
   height: 435px;
+  color: lightgrey;
 }
 
 .messages{
@@ -14,9 +18,25 @@
 
 .modal {
   position: relative !important;
-  /*margin-left: 0px !important;*/
-  right-padding: 100px;
+  margin-left: 30% !important;
+  right-padding: 200px;
   margin-top: -400px !important;
   background-color: transparent !important;
-  width: 35% !important;
+  width: 50% !important;
+}
+.btn-circle {
+  width: 30px !important;
+  height: 30px !important;
+  text-align: center !important;
+  padding: 6px 6px;
+  background-color: transparent;
+  margin-left: 5% !important;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
+
+.row{
+  margin-top: 30px;
+
 }
