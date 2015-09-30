@@ -1,28 +1,31 @@
 <!doctype html>
 <html>
 <head>
+  <!--FIREBASE-->
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+
+  <!--JQUERY-->
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
-  <link rel='stylesheet' type='text/css' href='css/style.css'>
-  <!-- Latest compiled and minified CSS -->
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap-modal.min.js"></script>
 
+  <!--MY CSS-->
+  <link rel='stylesheet' type='text/css' href='css/style.css'>
+
+  <!--BOOTSTRAP-->
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" />
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
-
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap-modal.min.js"></script>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
+
 <body>
 
 
 <div class="container">
 
   <div class="row">
-
     <!--LEFT SIDE-->
     <div class="col-md-2 visit">
       <div class="row">
@@ -47,6 +50,8 @@
   </div>
 </div>
 
+
+
 <div class="row">
   <div class="span12">
     <div id="firechat-container" class="clearfix"></div>
@@ -56,7 +61,6 @@
     </div>
   </div>
 </div>
-
 
 <div class="modal fade" id="auth-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
@@ -139,6 +143,7 @@
 //  Declare Variables
   var myDataRef = new Firebase('https://uit-chat.firebaseio.com/');
   var name = "";
+  var channelName = "general";
   var authModal = $('#auth-modal').modal( {show : false} );
   var channelModal = $('#channel-modal').modal( {show :false} );
 
@@ -183,11 +188,22 @@
       var channelName = $('#channelName').val();
       var channelPurpose = $('#channelPurpose').val();
 
-      myDataRef.child('channels').child(channelName).push( {channelName: channelName, creator: name, channelPurpose: channelPurpose} );
+      myDataRef.child('channels').push( {channelName: channelName, creator: name, channelPurpose: channelPurpose} );
       console.log(channelName);
     }
 
   });
+
+  myDataRef.child('channels').on('child_added', function(snapshot) {
+    var allChannels = snapshot.val();
+    console.log(allChannels);
+    displayChannels(allChannels.channelName);
+  });
+
+  function displayChannels(allChannels){
+    $('<div/>').prepend($('<em/>').text(allChannels)).appendTo($('#channelsDiv'));
+
+  }
 
 //  when the enter key is pressed then: check to see if we have authenticated the user
 //  if not get them to auth, if so let them type a message
@@ -201,14 +217,16 @@
         console.log(name);
       }
 
+      console.log('channel name:', channelName);
       var text = $('#messageInput').val();
-      myDataRef.child('messages').push({name: name, text: text});
+      myDataRef.child('messages').child(channelName).push({name: name, text: text});
       $('#messageInput').val('');
     }
   });
 
 
-  myDataRef.child('messages').on('child_added', function(snapshot) {
+
+  myDataRef.child('messages').child(channelName).on('child_added', function(snapshot) {
     var message = snapshot.val();
     displayChatMessage(message.name, message.text);
   });
